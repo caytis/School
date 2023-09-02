@@ -5,6 +5,7 @@ def processAll():
     with open(FILE) as file:
         for line in file:
             this = line.split(':')
+            this[1] = this[1][:-1]
             date = this[0]
             price = this[1]
             prices.append([date, price])
@@ -14,59 +15,67 @@ def separateYears(prices):
     lastYear = 0
     lastMonth = '01'
     data = []
-    thisYear = []
-    thisMonth = []
+    thisYear = ['1000', '0']
+    thisMonth = ['1000', '0']
     for line in prices:
         this = line[0].split('-')
         month = this[0]
         year = this[2]
         price = line[1]
         if month != lastMonth:
+            thisYear[0] = low([thisMonth[0], thisYear[0]])
+            thisYear[1] = high([thisMonth[1], thisYear[1]])
+            thisMonth.pop(0)
+            thisMonth.pop(0)
             thisYear.append(average(thisMonth))
-            thisMonth = []
+            thisMonth = ['1000', '0']
             lastMonth = month
+        if lastYear == 0:
+            lastYear = year
         if year != lastYear:
             data.append(organize(lastYear, thisYear))
             lastYear = year
-            thisYear = []
+            thisYear = ['1000', '0']
         thisMonth.append(price)
+        thisMonth[0] = low([price, thisMonth[0]])
+        thisMonth[1] = high([price, thisMonth[1]])
     write(data)
 
 def average(data):
     total = 0
     for price in data:
-        total += price
+        total += float(price)
     average = total / len(data)
-    return average
+    return average.__round__(2)
 
 def low(year):
-    low = 0
+    low = float(year[0])
     for month in year:
-        if month < low:
-            low = month
+        if float(month) <= low:
+            low = float(month)
     return low
 
 def high(year):
-    high = 0
+    high = year[0]
     for month in year:
-        if month > high:
+        if month >= high:
             high = month
     return high
 
 def organize(num, year):
     data = []
-    data.append(num)
-    data.append(low(year))
-    data.append(average(year))
-    data.append(high(year))
-    for month in year:
+    data.append(str(num))
+    data.append(str(float(year[0]).__round__(2)))
+    data.append(str(average(year)))
+    data.append(str(float(year[1]).__round__(2)))
+    for month in year[2:]:
+        month = str(month.__round__(2))
+        if len(month) < 4 :
+            month += '0'
         data.append(month)
     return data
 
 def write(data):
-    # with open(FILE, "w+") as file:
-    #     file.write('') #gets rid of old hours
-    
     for year in data:
         print(year[0] + ":")
         print("    Low: $" + year[1] + ", Avg: $" + year[2] + ", High: $" + year[3])
@@ -88,5 +97,5 @@ def write(data):
 def main():
     processAll()
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
