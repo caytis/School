@@ -2,28 +2,35 @@
 def makeTuples():
     data = "hi"
     
-    parts = readParts("parts.txt")
+    parts = readParts('parts.txt')
     
     print(parts)
     pass
 
 def readParts(FILE):
-    name = ""
+    # name = ""
     with open(FILE) as file:
-        name = this[0]
-        name.name = name.set()
     # elif i == 1:
-        for line in range(2):
-            this = line.split(',') #here
-            for word in this:
-                values[word] = ""
-                        
-        for line in range(2, -1):
+
+        
+        
+        i = 0
+        for line in file:
             values = {}
-            this = line.split(',').string[:-2]
-            
-            # else:
-                # name.update(values)
+            this = line.split(',')
+
+            for each in this:
+                each = each.string[:-2]
+
+            if i == 0:
+                name = this[0]
+                name.name = name.set()
+                i = 1
+            elif i == 1:
+                for word in this:
+                    values[word] = ""
+                i = 2
+
             x = 0
             for word in this:
                 values[x] = word
