@@ -1,10 +1,10 @@
 from collections import namedtuple
 
 
-partsFILE = 'comprehensions\parts.txt' # comprehensions\
-projectsFILE = 'comprehensions\projects.txt'
-suppliersFILE = 'comprehensions\suppliers.txt'
-spjFILE = 'comprehensions\spj.txt'
+partsFILE = 'parts.txt' # comprehensions\
+projectsFILE = 'projects.txt'
+suppliersFILE = 'suppliers.txt'
+spjFILE = 'spj.txt'
 
 parts = list()
 projects = set()
@@ -69,9 +69,9 @@ def main():
 
     print({s.sname for s in suppliers for r in spj for p in parts if r.sno == s.sno if p.pno == r.pno if p.color == "Blue"}) #2. Get names of all suppliers that supply blue parts.
 
-    print({s.sname for s in suppliers for r in spj for j in projects if r.sno == s.sno if j.jno == r.jno if j.city != "Athens"}) #3. Get names of all suppliers not used in Athens projects
+    print({s.sname for s in suppliers for r in spj for j in projects if (not r.sno == s.sno, j.city == "Athens") and (r.sno == s.sno, not j.city == "Athens", j.jno == r.jno)}) #3. Get names of all suppliers not used in Athens projects
 
-    #4. Get names and colors of all parts not used in Oslo
+    #4. Get names and colors of all parts not used in Oslo (not A, B), (A, not B, C)
 
     #5. Get pairs of names of all suppliers that are located in the same city.
 
