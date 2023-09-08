@@ -1,52 +1,49 @@
 
+partsFILE = 'comprehensions\parts.txt'
+projectsFILE = 'comprehensions\projects.txt'
+suppliersFILE = 'comprehensions\suppliers.txt'
+spjFILE = 'comprehensions\spj.txt'
+
+
 def makeTuples():
-    data = "hi"
+    parts = readFile(partsFILE)
+    projects = readFile(projectsFILE)
+    suppliers = readFile(suppliersFILE)
+    spj = readFile(spjFILE)
     
-    parts = readParts('parts.txt')
-    
-    print(parts)
-    pass
+    return parts, projects, suppliers, spj
 
-def readParts(FILE):
-    # name = ""
+def readFile(FILE):
+    data = list()
+    names = list()
+
     with open(FILE) as file:
-    # elif i == 1:
 
-        
-        
         i = 0
         for line in file:
-            values = {}
+            values = dict()
             this = line.split(',')
 
-            for each in this:
-                each = each.string[:-2]
-
             if i == 0:
-                name = this[0]
-                name.name = name.set()
-                i = 1
+                values['name'] = this[0].strip() #??? TODO: need to make this accessible
             elif i == 1:
                 for word in this:
-                    values[word] = ""
-                i = 2
-
-            x = 0
-            for word in this:
-                values[x] = word
-                x += 1
-            name.update(values)
+                    # if i == 1:
+                    #     beginning = word[0]
+                    names.append(word.strip())
+            else:
+                x = 0
+                for word in this:
+                    values[names[x] + str(i - 1)] = word.strip()
+                    x += 1
+                data.append(values)
             i += 1
     file.close()
-    return name
+    return data
 
-# # 1. Get names of all suppliers that supply bolts.
-# # 2. Get names of all suppliers that supply blue parts.
-# # 3. Get names of all suppliers not used in Athens projects
-# # 4. Get names and colors of all parts not used in Oslo
-# # 5. Get pairs of names of all suppliers that are located in the same city.
-# # 6. Print all suppliers out by city
 
+def get(lyst):
+    pass
 
 # {s.sname for s in suppliers for r in spj for j in projects 
 #  if r.sno == s.sno if j.jno == r.jno if j.city == 'London'}
@@ -67,7 +64,14 @@ def readParts(FILE):
 # # {'Paris': {'Jones', 'Blake'}, 'Athens': {'Adams'}, 'London': {'Clark', 'Smith'}}
 
 def main():
-    makeTuples()
+    parts, projects, suppliers, spj = makeTuples()
+    get(suppliers, "bolts")
+    # # 1. Get names of all suppliers that supply bolts.
+    # # 2. Get names of all suppliers that supply blue parts.
+    # # 3. Get names of all suppliers not used in Athens projects
+    # # 4. Get names and colors of all parts not used in Oslo
+    # # 5. Get pairs of names of all suppliers that are located in the same city.
+    # # 6. Print all suppliers out by city
 
 if __name__ == '__main__':
     main()
