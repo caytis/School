@@ -1,27 +1,66 @@
 
+def makeTuples():
+    data = "hi"
+    
+    parts = readParts("parts.txt")
+    
+    print(parts)
+    pass
 
-# 1. Get names of all suppliers that supply bolts.
-# 2. Get names of all suppliers that supply blue parts.
-# 3. Get names of all suppliers not used in Athens projects
-# 4. Get names and colors of all parts not used in Oslo
-# 5. Get pairs of names of all suppliers that are located in the same city.
-# 6. Print all suppliers out by city
+def readParts(FILE):
+    name = ""
+    with open(FILE) as file:
+        name = this[0]
+        name.name = name.set()
+    # elif i == 1:
+        for line in range(2):
+            this = line.split(',') #here
+            for word in this:
+                values[word] = ""
+                        
+        for line in range(2, -1):
+            values = {}
+            this = line.split(',').string[:-2]
+            
+            # else:
+                # name.update(values)
+            x = 0
+            for word in this:
+                values[x] = word
+                x += 1
+            name.update(values)
+            i += 1
+    file.close()
+    return name
+
+# # 1. Get names of all suppliers that supply bolts.
+# # 2. Get names of all suppliers that supply blue parts.
+# # 3. Get names of all suppliers not used in Athens projects
+# # 4. Get names and colors of all parts not used in Oslo
+# # 5. Get pairs of names of all suppliers that are located in the same city.
+# # 6. Print all suppliers out by city
 
 
-{s.sname for s in suppliers for r in spj for j in projects 
- if r.sno == s.sno if j.jno == r.jno if j.city == 'London'}
+# {s.sname for s in suppliers for r in spj for j in projects 
+#  if r.sno == s.sno if j.jno == r.jno if j.city == 'London'}
 
-#  {'Jones', 'Adams', 'Clark'}
+# #  {'Jones', 'Adams', 'Clark'}
 
-london_projs = {j.jno for j in projects if j.city == 'London'}
-london_supp_ids = {r.sno for r in spj if r.jno in london_projs}
-london_supps = {s.sname for s in suppliers if s.sno in london_supp_ids}
-print(london_supps)
+# london_projs = {j.jno for j in projects if j.city == 'London'}
+# london_supp_ids = {r.sno for r in spj if r.jno in london_projs}
+# london_supps = {s.sname for s in suppliers if s.sno in london_supp_ids}
+# print(london_supps)
 
 
-# {'Adams'}
-# {'Jones', 'Adams', 'Blake'}
-# {'Blake'}
-# {('Cam', 'Blue'), ('Cog', 'Red'), ('Nut', 'Red'), ('Bolt', 'Green'), ('Screw', 'Red')}
-# {('Jones', 'Blake'), ('Smith', 'Clark')}
-# {'Paris': {'Jones', 'Blake'}, 'Athens': {'Adams'}, 'London': {'Clark', 'Smith'}}
+# # {'Adams'}
+# # {'Jones', 'Adams', 'Blake'}
+# # {'Blake'}
+# # {('Cam', 'Blue'), ('Cog', 'Red'), ('Nut', 'Red'), ('Bolt', 'Green'), ('Screw', 'Red')}
+# # {('Jones', 'Blake'), ('Smith', 'Clark')}
+# # {'Paris': {'Jones', 'Blake'}, 'Athens': {'Adams'}, 'London': {'Clark', 'Smith'}}
+
+def main():
+    makeTuples()
+
+if __name__ == '__main__':
+    main()
