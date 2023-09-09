@@ -80,10 +80,9 @@ def main():
     os_parts = {(p.pname, p.color) for p in parts for pno in os_part_ids if p.pno != pno}
     print(os_parts)
 
-    name_pairs = {(n1.sname, n2.sname) for n1 in suppliers for n2 in suppliers if n1.sno != n2.sno if n1.city == n2.city} #5. Get pairs of names of all suppliers that are located in the same city.
-    # print({p for p in name_pairs if p[0] != p[1]})
+    print({(n1.sname, n2.sname) for n1 in suppliers for n2 in suppliers if (int(n1.sno[1]) % 2 == 0) if (int(n2.sno[1]) % 2 == 1) if n1.sno != n2.sno if n1.city == n2.city}) #5. Get pairs of names of all suppliers that are located in the same city.
 
-    #6. Print all suppliers out by city
+    print({s.city: {s.sname for s in suppliers} for s in suppliers}) #6. Print all suppliers out by city
 
 
 if __name__ == '__main__':
