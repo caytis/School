@@ -68,8 +68,12 @@ def main():
     print({s.sname for s in suppliers for r in spj for p in parts if r.sno == s.sno if p.pno == r.pno if p.pname == "Bolt"}) #1. Get names of all suppliers that supply bolts.
 
     print({s.sname for s in suppliers for r in spj for p in parts if r.sno == s.sno if p.pno == r.pno if p.color == "Blue"}) #2. Get names of all suppliers that supply blue parts.
-
-    print({s.sname for s in suppliers for r in spj for j in projects if (not r.sno == s.sno, j.city == "Athens") and (r.sno == s.sno, not j.city == "Athens", j.jno == r.jno)}) #3. Get names of all suppliers not used in Athens projects
+    
+    ath_projs = {j.jno for j in projects if j.city == 'Athens'} #3. Get names of all suppliers not used in Athens projects
+    ath_supp_ids = {r.sno for r in spj for j in ath_projs if r.jno == j}
+    ath_supps = {s.sname for s in suppliers if s.sno in ath_supp_ids}
+    ath_not = {s.sname for s in suppliers if s.sname not in ath_supps}
+    print(ath_not)
 
     #4. Get names and colors of all parts not used in Oslo (not A, B), (A, not B, C)
 
