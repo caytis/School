@@ -1,3 +1,4 @@
 {'Adams'}
-{'Adams', 'Blake', 'Jones'}
+{'Adams', 'Jones', 'Blake'}
 {'Blake'}
+{('Nut', 'Red'), ('Bolt', 'Green'), ('Cam', 'Blue'), ('Cog', 'Red'), ('Screw', 'Red')}
