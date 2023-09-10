@@ -82,7 +82,7 @@ def main():
 
     print({(n1.sname, n2.sname) for n1 in suppliers for n2 in suppliers if (int(n1.sno[1]) % 2 == 0) if (int(n2.sno[1]) % 2 == 1) if n1.sno != n2.sno if n1.city == n2.city}) #5. Get pairs of names of all suppliers that are located in the same city.
 
-    print({s.city: {s.sname for s in suppliers} for s in suppliers}) #6. Print all suppliers out by city
+    print({s.city: {c.sname for c in suppliers if s.city == c.city} for s in suppliers}) #6. Print all suppliers out by city
 
 
 if __name__ == '__main__':
