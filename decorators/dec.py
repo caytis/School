@@ -4,15 +4,16 @@ import functools
 # Never called twice with the same args (key = str(args) + str(kwargs)), counts total number of calls
 def track(f):
     cache = {}
-
+    @functools.wraps(f)
     def wrapper(*args1, **args2):
-        # key = str(args1) + str(args2)
-        # if key not in cache:
-        #     cache[key] = ""
-        #     wrapper.count += 1 #cheating :(
-        # elif cache[key] == "" and args1 != (0,):
-        #     print(key, "found in cache")
-        #     cache[key] = 0
+        key = str(args1) + str(args2)
+        if key not in cache:
+            cache[key] = ""
+            wrapper.count += 1 #cheating :(
+        elif cache[key] == "" and args1 != (0,):
+            print(key, "found in cache")
+            cache[key] = 0
+            # return f.__wrapped__(*args1, **args2)
         return f(*args1, **args2)
     wrapper.count = 0
     return wrapper
