@@ -1,18 +1,18 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 class Customer:
-    def __init__(self, cust_id, name, street, city, state, zip, phone, email):
-        int = cust_id
-        string = name
-        string = street
-        string = city
-        string = state
-        string = zip
-        string = phone
-        string = email
+    def __init__(self, custid, name, street, city, state, zip, phone, email):
+        self.custid = custid
+        self.name = name
+        self.street = street
+        self.city = city
+        self.state = state
+        self.zip = zip
+        self.phone = phone
+        self.email = email
     
     def __str__(self):
-        strr = "Customer ID #" + self.cust_id
+        strr = "Customer ID #" + self.custid
         strr += ":\n" + self.name + ", ph.", self.phone
         strr += ", email:", self.email
         strr += "\n" + self.street + "\n"
@@ -20,6 +20,7 @@ class Customer:
         return strr
 
 def read_customers(FILE):
+    global customers
     customers = []
     with open(FILE) as file:
         for line in file:
@@ -27,9 +28,6 @@ def read_customers(FILE):
             if len(parts) == 0:
                 break
             customers.append(Customer(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], parts[7]))
-    return customers
-
-customers = read_customers("online groceries\customers.txt")
 
 # int find_cust_idx(int cust_id) {
 #     for (int i = 0; i < customers.size(); ++i)
@@ -38,8 +36,8 @@ customers = read_customers("online groceries\customers.txt")
 #     throw runtime_error("Customer not found")
 
 class Item:
-    def __init__(self, item_id, descrip, price):
-        self.item_id = item_id
+    def __init__(self, itemid, descrip, price):
+        self.item_id = itemid
         self.descrip = descrip
         self.price = price
 
@@ -56,169 +54,108 @@ def read_items(FILE):
 
 items = read_items("online groceries\items.txt")
 
-int find_item_idx(int item_id) {
-    for (int i = 0; i < items.size(); ++i)
-        if (item_id == items[i].item_id)
-            return i;
-    throw runtime_error("Item not found");
-}
+# int find_item_idx(int item_id) {
+#     for (int i = 0; i < items.size(); ++i)
+#         if (item_id == items[i].item_id)
+#             return i;
+#     throw runtime_error("Item not found");
+# }
 
-class LineItem {
-    int item_id;
-    int qty;
-    friend class Order;
-public:
-    LineItem(int id, int q) {
-        item_id = id;
-        qty = q;
-    }
-    double sub_total() const {
-        int idx = find_item_idx(item_id);
-        return items[idx].price * qty;
-    }
-    friend bool operator<(const LineItem& item1, const LineItem& item2) {
-        return item1.item_id < item2.item_id
+class LineItem:
+    def __init__(self, id, qty):
+        self.id = id
+        self.qty = qty
+    # def sub_total():
+    #     # int idx = find_item_idx(item_id)
+    #     return items[idx].price * qty
 
 class Payment(ABC):
-    amount = 0
-    friend class Order
-public:
-    Payment() = default;
-    virtual ~Payment() = default;
-    virtual string print_detail() const = 0;
-};
+    def __init__(self, id, amount = 0):
+        self.id = id
+        self.amount = amount
 
-class Credit : public Payment { // I did this
-    string id;
-    string exp;
-    double amount;
-public:
-    ~Credit() override{};
-    Credit(string nid, string expr, double amoun) {
-        id = nid;
-        exp = expr;
-        amount = amoun;
-    }
-    string print_detail() const override {
-        stringstream stream;
-        stream << fixed << setprecision(2);
-        stream << amount;
-        string sAmount = stream.str();
+class Credit(Payment):
+    def __init__(self, id, expr, amount = 0):
+        super(self).__init__(id, amount)
+        self.expr = expr
 
-        string str = "Amount: $" + sAmount + ", ";
-        str += "Paid by Credit card " + id + ", exp. " + exp;
-        return str;
-    }
-};
+    def __str__(self):
+        strr = "Amount: $" + self.amount
+        strr += ", Paid by Credit card", id + ", exp.", self.exp
+        return strr
 
-class Paypal : public Payment { // I did this
-    string id;
-    double amount;
-public:
-    ~Paypal() override{};
-    Paypal(string nid, double amoun) {
-        id = nid;
-        amount = amoun;
-    }
-    string print_detail() const override {
-        stringstream stream;
-        stream << fixed << setprecision(2);
-        stream << amount;
-        string sAmount = stream.str();
+class PayPal(Payment):
+    def __init__(self, id, amount = 0):
+        super(self).__init__(id, amount)
 
-        string str = "Amount: $" + sAmount + ", ";
-        str += "Paid by Paypal " + id;
-        return str;
-    }
-};
+    def __str__(self):
+        strr = "Amount: $" + self.amount
+        strr += ", Paid by Paypal ID:", id
+        return strr
 
-class WireTransfer : public Payment { // I did this
-    string bank;
-    string account;
-    double amount;
-public:
-    ~WireTransfer() override{};
-    WireTransfer(string ban, string accoun, double amoun) {
-        bank = ban;
-        account = accoun;
-        amount = amoun;
-    }
-    string print_detail() const override {
-        stringstream stream;
-        stream << fixed << setprecision(2);
-        stream << amount;
-        string sAmount = stream.str();
+class WireTransfer(Payment):
+    def __init__(self, accid, bankid, amount = 0):
+        super(self).__init__(accid, amount)
+        self.bankid = bankid
 
-        string str = "Amount: $" + sAmount + ", ";
-        str += "Wire transfer, bank id: " + bank + " account id: " + account;
-        return str;
-    }
-};
+    def __str__(self):
+        strr = "Amount: $" + self.amount
+        strr += ", Wire transfer, bank id:", self.bankid, "account id:", self.accid
+        return strr
 
-///////////////
-// Order code /
-///////////////
-class Order {
-    int order_id;
-    string order_date;
-    int cust_id;
-    vector<LineItem> line_items;
-    Payment* payment;
-public:
-    Order(int id, const string& date, int c_id, const vector<LineItem>& items, Payment* p) // I didn't do this
-    : order_date(date), line_items(items) {
-        order_id = id;
-        cust_id = c_id;
-        payment = p;
-        sort(line_items.begin(), line_items.end());
-    }
-    ~Order() {
-        delete payment;
-    }
-    double total() const {
-        return payment->amount;
-    }
-    string print_order() const {
-        int index = find_cust_idx(cust_id); //I did this
-        Customer cust = customers.at(index);
-        string str;
-        stringstream bValue(order_id);
-        string orderid;
-        bValue >> orderid;
+# payments = [] TODO
 
-        str += "===========================\n";
-        str += "Order #" + orderid;
-        str += ", Date: " + order_date + "\n";
-        str += payment->print_detail() + "\n\n";
+class Order:
+    # vector<LineItem> line_items;
+    # Payment* payment
+    def __init__(self, ordid, date, custid, items, paym):
+        # order_date(date), line_items(items)
+        self.ordid = ordid
+        self.custid = custid
+        self.paym = paym
+        self.date = date
+        self.items = items
+        # sort(line_items.begin(), line_items.end());
+    
+    # double total() const {
+    #     return payment->amount;
+    # }
+
+    def print_order(self):
+        # int index = find_cust_idx(cust_id); //I did this
+        # Customer cust = customers.at(index);
+
+        str = "===========================\n"
+        str += "Order #" + self.ordid
+        str += ", Date:", self.date + "\n"
+        str += str(payments) + "\n\n"
         str += cust.print_detail() + "\n\n";
         str += "Order detail:\n";
 
-        for (int i = 0; i < line_items.size(); i++) {
-            string descrip = items.at(find_item_idx(line_items.at(i).item_id)).description;
-            double temp = items.at(find_item_idx(line_items.at(i).item_id)).price;
+        for item in line_items:
+            # string descrip = items.at(find_item_idx(line_items.at(i).item_id)).description;
+            # double temp = items.at(find_item_idx(line_items.at(i).item_id)).price;
 
-            stringstream stream;
-            stream << fixed << setprecision(2);
-            stream << temp;
-            string price = stream.str();
+            # stringstream stream;
+            # stream << fixed << setprecision(2);
+            # stream << temp;
+            # string price = stream.str();
 
-            stringstream check(line_items.at(i).item_id);
-            string item_id;
-            check >> item_id;
+            # stringstream check(line_items.at(i).item_id);
+            # string item_id;
+            # check >> item_id;
 
-            stringstream chek(line_items.at(i).qty);
-            string qty;
-            chek >> qty;
+            # stringstream chek(line_items.at(i).qty);
+            # string qty;
+            # chek >> qty;
 
-            str += "Item " + item_id;
-            str += ": \"" + descrip + "\", ";
-            str += qty + " @ " + price + "\n";
-        }
+            strr += "Item", item.id #TODO WHATS THIS???
+            strr += ": \"" + item.descrip + "\", "
+            strr += item.qty, "@", item.price + "\n"
 
-        return str;
-    }
-};
-list<Order> orders;
+        return str
+
+# orders = [] TODO
 
 void read_orders(const string& fname) {
     ifstream file(fname);
