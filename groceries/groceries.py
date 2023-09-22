@@ -103,9 +103,9 @@ class Order:
     def print_order(self):
         strr = "===========================\n"
         strr += "Order #" + self.ordid
-        strr += ", Date:", self.date + "\n"
+        strr += ", Date: " + self.date + "\n"
         for item in self.items:
-            self.paym.amount += items[item].total * items[item].qty
+            self.paym.amount += item.total * items[item.id].qty
         self.paym.amount = round(self.paym.amount, 2)
         strr += str(self.paym), "\n\n"
         strr += str(customers[self.custid]) + "\n\n"
@@ -121,9 +121,9 @@ class Order:
     def read_orders(FILE):
         with open(FILE) as file:
             lines = file.readlines()
-            for i in len(lines), 2: #TODO does this skip?
+            i = 0
+            while i < len(lines):
                 parts = lines[i].split(",")
-                pay = lines[i + 1].split(",")
                 custid = parts[0]
                 ordid = parts[1]
                 date = parts[2]
@@ -131,14 +131,17 @@ class Order:
                 for item in parts[3:]:
                     pieces = item.split("-")
                     items.append(LineItem(pieces[0], pieces[1]))
+                i += 1
+                pay = lines[i].split(",")
                 paym = ""
                 if pay[0] == 1:
-                    paym = Credit(paym[1], paym[2])
+                    paym = Credit(pay[1], pay[2])
                 elif pay[0] == 2:
-                    paym = PayPal(paym[1], paym[2])
+                    paym = PayPal(pay[1], pay[2])
                 else:
-                    paym = WireTransfer(paym[1], paym[2])
+                    paym = WireTransfer(pay[1], pay[2])
                 Order(custid, ordid, date, items, paym).print_order()
+                i += 1
 
 if __name__ == '__main__':
     Customer.read_customers("customers.txt")
