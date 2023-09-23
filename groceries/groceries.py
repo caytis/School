@@ -12,11 +12,11 @@ class Customer:
         self.email = email
     
     def __str__(self):
-        strr = "Customer ID #" + self.id
-        strr += ":\n" + self.name + ", ph.", self.phone
-        strr += ", email:", self.email
-        strr += "\n" + self.street + "\n"
-        strr += self.city + ",", self.state, self.zip
+        strr = "Customer ID #" + self.custid
+        strr += ":\n" + self.name + ", ph. " + self.phone
+        strr += ", email: " + self.email
+        strr += self.street + "\n"
+        strr += self.city + ", " + self.state + " " + self.zip + "\n\n"
         return strr
 
     def read_customers(FILE):
@@ -31,7 +31,7 @@ class Customer:
 
 class Item:
     def __init__(self, id, descrip, price):
-        self.item_id = id
+        self.id = id
         self.descrip = descrip
         self.price = price
 
@@ -43,6 +43,7 @@ class Item:
                 parts = line.split(",")
                 if len(parts) == 0:
                     break
+                parts[2] = parts[2].strip()
                 items[parts[0]] = Item(parts[0], parts[1], parts[2])
 
 class LineItem:
@@ -51,71 +52,73 @@ class LineItem:
         self.qty = qty
         self.total = items[id].price
 
+    def __gt__(self, other):
+        if int(self.id) > int(other.id):
+            return True
+        return False
+
 class Payment(ABC):
-    def __init__(self, id, amount = 0):
+    def __init__(self, id, amount = 0.0):
         self.id = id
         self.amount = amount
 
 class Credit(Payment):
-    def __init__(self, id, expr, amount = 0):
+    def __init__(self, id, expr, amount = 0.0):
         self.id = id
         self.expr = expr
         self.amount = amount
 
     def __str__(self):
-        strr = "Amount: $" + self.amount
-        strr += ", Paid by Credit card", self.id + ", exp.", self.exp
+        strr = "Amount: $" + str(round(self.amount, 2))
+        strr += ", Paid by Credit card " + self.id + ", exp. " + self.expr
         return strr
 
 class PayPal(Payment):
-    def __init__(self, id, amount = 0):
+    def __init__(self, id, amount = 0.0):
         self.id = id
         self.amount = amount
 
     def __str__(self):
-        strr = "Amount: $" + self.amount
-        strr += ", Paid by Paypal ID:", self.id
+        strr = "Amount: $" + str(round(self.amount, 2))
+        strr += ", Paid by Paypal ID: " + self.id
         return strr
 
 class WireTransfer(Payment):
-    def __init__(self, accid, bankid, amount = 0):
-        self.id = accid
+    def __init__(self, accid, bankid, amount = 0.0):
+        self.accid = accid
         self.bankid = bankid
         self.amount = amount
 
     def __str__(self):
-        strr = "Amount: $" + self.amount
-        strr += ", Wire transfer, bank id:", self.bankid, "account id:", self.accid
+        strr = "Amount: $" + str(round(self.amount, 2))
+        strr += ", Wire transfer, bank id: " + self.bankid + " account id: " + self.accid
         return strr
 
-# payments = [] TODO
-
 class Order:
-    # vector<LineItem> line_items;
-    # Payment* payment
-    def __init__(self, ordid, date, custid, items, paym):
+    def __init__(self, custid, ordid, date, items, paym):
         self.ordid = ordid
         self.custid = custid
         self.paym = paym
         self.date = date
         self.items = items
+    
+    def total(self):
+        for item in self.items:
+            self.paym.amount += float(item.total) * float(item.qty)
 
     def print_order(self):
         strr = "===========================\n"
         strr += "Order #" + self.ordid
         strr += ", Date: " + self.date + "\n"
+        self.total()
+        strr += str(self.paym) + "\n"
+        strr += str(customers[self.custid])
+        strr += "Order Detail:\n"
+        
         for item in self.items:
-            self.paym.amount += item.total * items[item.id].qty
-        self.paym.amount = round(self.paym.amount, 2)
-        strr += str(self.paym), "\n\n"
-        strr += str(customers[self.custid]) + "\n\n"
-        strr += "Order detail:\n"
-
-        for item in self.items:
-            strr += "Item", item.id
+            strr += "        Item " + item.id
             strr += ": \"" + items[item.id].descrip
-            strr += "\",", item.qty, "@", item.total + "\n"
-
+            strr += "\", " + item.qty.strip() + " @ " + item.total + "\n"
         print(strr)
 
     def read_orders(FILE):
@@ -127,20 +130,21 @@ class Order:
                 custid = parts[0]
                 ordid = parts[1]
                 date = parts[2]
-                items = []
+                itemlist = []
                 for item in parts[3:]:
                     pieces = item.split("-")
-                    items.append(LineItem(pieces[0], pieces[1]))
+                    itemlist.append(LineItem(pieces[0], pieces[1]))
+                itemlist.sort()
                 i += 1
                 pay = lines[i].split(",")
                 paym = ""
-                if pay[0] == 1:
+                if pay[0] == "1":
                     paym = Credit(pay[1], pay[2])
-                elif pay[0] == 2:
-                    paym = PayPal(pay[1], pay[2])
+                elif pay[0] == "2":
+                    paym = PayPal(pay[1])
                 else:
                     paym = WireTransfer(pay[1], pay[2])
-                Order(custid, ordid, date, items, paym).print_order()
+                Order(custid, ordid, date, itemlist, paym).print_order()
                 i += 1
 
 if __name__ == '__main__':
