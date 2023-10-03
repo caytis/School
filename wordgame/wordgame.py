@@ -1,4 +1,7 @@
-import itertools.groupby, random.choice, random.shuffle
+# import itertools.groupby, random.choice, random.shuffle, collections.Counter
+from itertools import groupby
+from random import choice, shuffle
+from collections import Counter
 
 def start():
     # inp = ""
@@ -16,29 +19,41 @@ def start():
             high = rang[1]
             word = pick(words, high)
             found = search(word, words, low, high)
-            check(found)
+            check(found, word)
             # check()
             # continue
 
 def pick(words, length):
-    words = random.shuffle(words)
-    for word in words:
+    while True:
+        word = random.choice(words)
         if len(word) == length:
             return word
-    print("No words in this range found")
+    # print("No words in this range found")
 
 def search(it, words, low, high):
     fits = words
-    for letter in it:
-        for word in fits:
-            if not (len(word) >= low and len(word) <= high and letter in word):
-                fits.remove(word)
-    lengths = itertools.groupby(words, lambda x : len(x)) # lambda?
+    for word in fits:
+        if not (len(word) >= low and len(word) <= high):
+            fits.remove(word)
+    for word in fits:
+        if word not in it: # does this work?
+            fits.remove(word)
+    lengths = itertools.groupby(fits, lambda x : len(x)) # lambda?
     return lengths
                 
 
-def check(found):
-    pass
+def check(found, it):
+    for length in found:
+        for word in length:
+            word = {word : str("'" + "-" * len(word) + "'")}
+    while True:
+        print(random.shuffle(it) + ":")
+        for length in found:
+            print(length) # need to change it to 
+            
+            # TODO
+        
+        inp = input("Enter a guess:")
 
 def main():
     pass
