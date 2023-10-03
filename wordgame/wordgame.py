@@ -16,7 +16,8 @@ def start():
             high = rang[1]
             word = pick(words, high)
             found = search(word, words, low, high)
-            write(found)
+            check(found)
+            # check()
             # continue
 
 def pick(words, length):
@@ -27,9 +28,16 @@ def pick(words, length):
     print("No words in this range found")
 
 def search(it, words, low, high):
-    long = itertools.groupby(words, lambda x : len(x) >= low and len(x) <= high) # lambda?
+    fits = words
+    for letter in it:
+        for word in fits:
+            if not (len(word) >= low and len(word) <= high and letter in word):
+                fits.remove(word)
+    lengths = itertools.groupby(words, lambda x : len(x)) # lambda?
+    return lengths
+                
 
-def write(found):
+def check(found):
     pass
 
 def main():
