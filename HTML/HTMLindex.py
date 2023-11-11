@@ -2,32 +2,38 @@ import os
 import exifread
 import reverse_geocoder
 
-def search_dir(olddir, curdir):
-    """Search curr dir, make list with subdirs and images"""
+def scan(curdir):
     filescan = os.scandir(curdir)
     dirscan = os.scandir(curdir)
     files = list(entry.name for entry in filescan if entry.is_file())
     dirs = list(entry.name for entry in dirscan if entry.is_dir())
+
+    if '.DS_Store' in files:
+        files.remove('.DS_Store')
+
+    return files, dirs
+
+def search_dir(curdir):
+
+    files, dirs = scan(curdir)
+
     dirs.sort()
-    # index = None
     for file in files:
         if not (".jpeg" in file.lower() or ".jpg" in file.lower() or ".png" in file.lower() or ".gif" in file.lower()):
             files.remove(file)
-        # elif "index.html" in file.lower():
-        #     index = dir + "/" + file
-        # else:
-        #     print(file.lower())
     files.sort()
-    for newdir in dirs:
-        # print(newdir)
-        newdir = curdir + "/" + newdir
-        createHTML(olddir, curdir, dirs, files) # files
-        search_dir(curdir, newdir)
 
-def createHTML(olddir, curdir, dirs, files): # dont display dir if all future dirs are empty
-    
-    cleancur = curdir.split("/")[len(curdir.split("/")) - 1]
-    
+    for newdir in dirs:
+        createHTML(curdir, dirs, files)
+        newdir = curdir + "/" + newdir
+        search_dir(newdir)
+    createHTML(curdir, dirs, files)
+
+def createHTML(curdir, dirs, files):
+
+    cursplit = curdir.split("/")
+    cleancur = cursplit[len(cursplit) - 1]
+
     towrite = """<html>
     <head>
     <style>
@@ -38,25 +44,28 @@ def createHTML(olddir, curdir, dirs, files): # dont display dir if all future di
     </head>
     <body>"""
 
+    nextindex = "../index.html"
 
-    towrite += f"""<h2><a href="{olddir}">
+    if cleancur == "Pictures":
+        nextindex = "index.html"
+
+    towrite += f"""<h2><a href="{nextindex}">
     {cleancur}
     </a></h2>
     """
 
-    for dir in dirs:
-        if not emptyDir(f"{curdir}/{dir}"):
+    for dirr in dirs:
+        if emptyDir(f"{curdir}/{dirr}"):
             towrite += f"""<div class="dirlink_el">
-            <a href=\"{curdir}/{dir}/index.html\">{dir}</a>
+            <a href=\"{dirr}\">{dirr}</a>
             </div>
-
             <br>
             """
 
     for file in files:
-        f = open(file, 'rb')
+        f = open(f"{curdir}/{file}", 'rb')
         exif = exifread.process_file(f)
-        towrite += f""""<div class="img_el">
+        towrite += f"""<div class="img_el">
         <a href="{file}"><img src="{file}" class="sm_img"></a>
         <br>
         {file}
@@ -67,35 +76,33 @@ def createHTML(olddir, curdir, dirs, files): # dont display dir if all future di
             towrite += f"""{dateTime}
             <br>
             """
-        
+
         longi = exif.get("GPS GPSLongitude")
         longiref = exif.get("GPS GPSLongitudeRef")
         lati = exif.get("GPS GPSLatitude")
         latiref = exif.get("GPS GPSLatitudeREF")
-        
-        if longi and longiref and lati and latiref:
-            longi = longi[1:-1].split(",")
-            deg = int(longi[0])
-            min = int(longi[1])
-            seclist = longi[2].split("/")
-            sec = int(seclist[0]) / int(seclist[1])
+
+        if longi or longiref or lati or latiref:
+            longi = longi.values
+            deg = longi[0]
+            min = longi[1]
+            sec = longi[2]
             ddlongi = deg + min / 60 + sec / 3600
-            if latiref == "S":
+            if longiref and longiref.values == "S":
                 ddlongi *= -1
-            lati = lati[1:-1].split(",")
-            deg = int(lati[0])
-            min = int(lati[1])
-            seclist = lati[2].split("/")
-            sec = int(seclist[0]) / int(seclist[1])
-            ddlongi = deg + min / 60 + sec / 3600
-            if latiref == "W":
-                ddlongi *= -1
-                
-            found = reverse_geocoder.search(lati, longi)
+            lati = lati.values
+            deg = lati[0]
+            min = lati[1]
+            sec = lati[2]
+            ddlati = deg + min / 60 + sec / 3600
+            if latiref and latiref.values == "W":
+                ddlati *= -1
+
+            found = reverse_geocoder.search((ddlati, ddlongi))[0]
             name = found.get("name")
             admin1 = found.get("admin1")
             cc = found.get("cc")
-            
+
             towrite += f"""{name}, {admin1} {cc}
             </div>
             """
@@ -106,27 +113,23 @@ def createHTML(olddir, curdir, dirs, files): # dont display dir if all future di
             </div>
             """
         f.close()
-    
-        towrite += """</body>
-        </html>"""
-    
+
+    towrite += """</body>
+    </html>"""
+
     with open(curdir + "/index.html", "w") as file:
         file.write(towrite)
 
-def emptyDir(dir, hasfile = False):
-    filescan = os.scandir(dir)
-    dirscan = os.scandir(dir)
-    files = list(entry.name for entry in filescan if entry.is_file())
-    dirs = list(entry.name for entry in dirscan if entry.is_dir())
+def emptyDir(dirr, hasfile = False):
+    files, dirs = scan(dirr)
     for file in files:
         if (".jpeg" in file.lower() or ".jpg" in file.lower() or ".png" in file.lower() or ".gif" in file.lower()):
             hasfile = True
             return hasfile
     for nextdir in dirs:
-        nextdir = dir + "/" + nextdir
-        emptyDir(nextdir, hasfile)
+        nextdir = dirr + "/" + nextdir
+        hasfile = emptyDir(nextdir, hasfile)
     return hasfile
 
 if __name__ == '__main__':
-    search_dir("HTML", "HTML/Pictures")
-    pass
+    search_dir("HTML/Pictures")
