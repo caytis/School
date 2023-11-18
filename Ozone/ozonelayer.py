@@ -1,11 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import statistics
-# import threading
 
 def parse():
     csv = open("Ozone/daily_44201_2021.csv").readlines()
-    # counties = open("Ozone/counties.txt").readlines()
     categories = [x.strip('"\n') for x in csv[0].split(',')]
     divvied = []
     lines = []
@@ -23,14 +21,13 @@ def parse():
                 divvied[i][categories[cat]] = item.strip(',"')
                 if cat < 28: cat += 1
 
-    # threading.Thread()
     states = {}
     for line in divvied:
         state = line.get("State Name").lower()
         county = line.get("County Name").lower()
         if state not in states.keys():
             states[state] = {}
-        if county not in states[state].keys(): # has utah in utah? there's a few things messed up
+        if county not in states[state].keys():
             states[state][county] = []
         states[state][county].append(line)
 
@@ -43,7 +40,7 @@ def parse():
     return states, codes
 
 def ask(states, codes):
-    inp = input("Enter 2-letter state code (Q to quit): ").upper()  # Check for invalid
+    inp = input("Enter 2-letter state code (Q to quit): ").upper()
     if inp == 'Q':
         return
     if inp not in codes:
@@ -70,15 +67,13 @@ def ask(states, codes):
         dest = input("Choose destination for plot: \n      1     Screen\n      2     File\n")
         if dest == '1':
             plot(states[state][county])
-            
         if dest == '2':
             file = input('Enter file with extension of jpg|png|pdf: ')
             plot(states[state][county], file)
         yn = input(f'Another {state} county? (y/n): ').lower()
         if yn == 'y':
             continue
-        else:
-            ask(states, codes)
+        ask(states, codes)
         return
 
 def plot(data, dest=None):
