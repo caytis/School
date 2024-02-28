@@ -46,8 +46,6 @@ pc2 = [
 
 allKs = ["".join([newKs[i][j] for j in pc2]) for i in range(16)]
 
-# print(allKs)
-
 ip = [
     57, 49, 41, 33, 25, 17, 9, 1,
     59, 51, 43, 35, 27, 19, 11, 3,
@@ -79,11 +77,11 @@ Ls = [format(int(firstL, 16), '032b')]
 Rs = [format(int(firstR, 16), '032b')]
 
 for i in range(16):
-    newRs = "".join([Rs[-1][x] for x in edible])
-    erK = int(newRs, 2) ^ int(allKs[i], 2)
-    finalR = format(int(Ls[-1], 2) ^ erK, '032b')
-    finalL = Rs[-1]
-    Rs.append(finalR)
-    Ls.append(finalL)
+    newR = "".join([Rs[i-1][x] for x in edible])
+    erK = int(Rs[i-1], 2) ^ int(allKs[i], 2)
+    endingR = format(int(Ls[i-1], 2) ^ erK, '032b')
+    endingL = Rs[-1]
+    Rs.append(endingR)
+    Ls.append(endingL)
 
 print(Rs)
