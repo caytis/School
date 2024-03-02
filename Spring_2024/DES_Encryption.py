@@ -1,7 +1,7 @@
 import sys
 
-plainM = "0123456789ABCDEF" #sys.argv[1]
-plainK = "133457799BBCDFF1" #sys.argv[2]
+plainM = sys.argv[1]
+plainK = sys.argv[2]
 
 binM = format(int(plainM, 16), '064b')
 binK = format(int(plainK, 16), '064b')
@@ -28,10 +28,10 @@ Cs = [firstC]
 Ds = [firstD]
 
 for i in range(16):
-    Cs.append("".join(Cs[i-1][shifts[i-1]:] + Cs[i-1][:shifts[i-1]]))
-    Ds.append("".join(Ds[i-1][shifts[i-1]:] + Ds[i-1][:shifts[i-1]]))
+    Cs.append("".join(Cs[i][shifts[i]:] + Cs[i][:shifts[i]]))
+    Ds.append("".join(Ds[i][shifts[i]:] + Ds[i][:shifts[i]]))
 
-newKs = [Cs[i] + Ds[i] for i in range(16)]
+newKs = [Cs[i+1] + Ds[i+1] for i in range(16)]
 
 pc2 = [
     13, 16, 10, 23, 0, 4,
@@ -44,7 +44,9 @@ pc2 = [
     45, 41, 49, 35, 28, 31
 ]
 
-allKs = ["".join([newKs[i][j] for j in pc2]) for i in range(16)]
+allKs = ["".join(newKs[i][x] for x in pc2) for i in range(16)]
+
+print(f"Part 1: {allKs}")
 
 ip = [
     57, 49, 41, 33, 25, 17, 9, 1,
@@ -144,12 +146,12 @@ for i in range(16):
     Bs = [exRK[x*6:x*6+6] for x in range(8)]
     Boutside = [int(Bs[x][0] + Bs[x][-1], 2) for x in range(8)]
     Binside = [int(Bs[x][1:5], 2) for x in range(8)]
-    Sdone = "".join([format(sBoxes[x][Boutside[x]][Binside[x]], '04b') for x in range(8)])
-    Pdone = "".join([Sdone[x] for x in P])
+    Sss = "".join([format(sBoxes[x][Boutside[x]][Binside[x]], '04b') for x in range(8)])
+    Pdone = "".join([Sss[x] for x in P])
     endingR = int(Ls[i-1], 2) ^ int(Pdone, 2)
 
-    Rs.append(format(endingR, '032b'))
     Ls.append(Rs[i-1])
+    Rs.append(format(endingR, '032b'))
 
 fp = [
     39, 7, 47, 15, 55, 23, 63, 31,
@@ -162,7 +164,9 @@ fp = [
     32, 0, 40, 8, 48, 16, 56, 24
 ]
 
-lastRL = Rs[-1] + Ls[-1]
+lastR = Rs[-1]
+lastL = Ls[-1]
+lastRL = Ls[-1] + Rs[-1]
 C = hex(int("".join([lastRL[x] for x in fp]), 2))[2:].upper()
 
-print(plainM, C)
+print(f"Part 2: {C}")
