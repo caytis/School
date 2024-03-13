@@ -1,11 +1,5 @@
 import sys
 
-plainM = sys.argv[1]
-plainK = sys.argv[2]
-
-binM = format(int(plainM, 16), '064b')
-binK = format(int(plainK, 16), '064b')
-
 pc1 = [
     56, 48, 40, 32, 24, 16, 8,
     0, 57, 49, 41, 33, 25, 17,
@@ -17,21 +11,7 @@ pc1 = [
     20, 12, 4, 27, 19, 11, 3
 ]
 
-Kplus = [binK[i] for i in pc1]
-
-firstC = "".join(Kplus[:28])
-firstD = "".join(Kplus[28:])
-
 shifts = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1]
-
-Cs = [firstC]
-Ds = [firstD]
-
-for i in range(16):
-    Cs.append("".join(Cs[i][shifts[i]:] + Cs[i][:shifts[i]]))
-    Ds.append("".join(Ds[i][shifts[i]:] + Ds[i][:shifts[i]]))
-
-newKs = [Cs[i+1] + Ds[i+1] for i in range(16)]
 
 pc2 = [
     13, 16, 10, 23, 0, 4,
@@ -44,10 +24,6 @@ pc2 = [
     45, 41, 49, 35, 28, 31
 ]
 
-allKs = ["".join(newKs[i][x] for x in pc2) for i in range(16)]
-
-print(f"Part 1: {allKs}")
-
 ip = [
     57, 49, 41, 33, 25, 17, 9, 1,
     59, 51, 43, 35, 27, 19, 11, 3,
@@ -58,11 +34,6 @@ ip = [
     60, 52, 44, 36, 28, 20, 12, 4,
     62, 54, 46, 38, 30, 22, 14, 6
 ]
-
-ipedM = "".join([binM[i] for i in ip])
-
-firstL = ipedM[:32]
-firstR = ipedM[32:]
 
 edible = [
     31, 0, 1, 2, 3, 4,
@@ -137,22 +108,6 @@ P = [
     21, 10, 3, 24
 ]
 
-Ls = [firstL]
-Rs = [firstR]
-
-for i in range(16):
-    exR = "".join([Rs[i-1][x] for x in edible])
-    exRK = format(int(exR, 2) ^ int(allKs[i], 2), '048b')
-    Bs = [exRK[x*6:x*6+6] for x in range(8)]
-    Boutside = [int(Bs[x][0] + Bs[x][-1], 2) for x in range(8)]
-    Binside = [int(Bs[x][1:5], 2) for x in range(8)]
-    Sss = "".join([format(sBoxes[x][Boutside[x]][Binside[x]], '04b') for x in range(8)])
-    Pdone = "".join([Sss[x] for x in P])
-    endingR = int(Ls[i-1], 2) ^ int(Pdone, 2)
-
-    Ls.append(Rs[i-1])
-    Rs.append(format(endingR, '032b'))
-
 fp = [
     39, 7, 47, 15, 55, 23, 63, 31,
     38, 6, 46, 14, 54, 22, 62, 30,
@@ -164,9 +119,93 @@ fp = [
     32, 0, 40, 8, 48, 16, 56, 24
 ]
 
-lastR = Rs[-1]
-lastL = Ls[-1]
-lastRL = Ls[-1] + Rs[-1]
-C = hex(int("".join([lastRL[x] for x in fp]), 2))[2:].upper()
+def encrypt(plainM, plainK):
+    binM = format(int(plainM, 16), '064b')
+    binK = format(int(plainK, 16), '064b')
 
-print(f"Part 2: {C}")
+    Kplus = [binK[i] for i in pc1]
+
+    firstC = "".join(Kplus[:28])
+    firstD = "".join(Kplus[28:])
+
+    Cs = [firstC]
+    Ds = [firstD]
+
+    for i in range(16):
+        Cs.append("".join(Cs[i][shifts[i]:] + Cs[i][:shifts[i]]))
+        Ds.append("".join(Ds[i][shifts[i]:] + Ds[i][:shifts[i]]))
+
+    newKs = [Cs[i+1] + Ds[i+1] for i in range(16)]
+
+    allKs = ["".join(newKs[i][x] for x in pc2) for i in range(16)]
+
+    # print(f"Part 1: {allKs}")
+
+    ipedM = "".join([binM[i] for i in ip])
+
+    firstL = ipedM[:32]
+    firstR = ipedM[32:]
+
+    Ls = [firstL]
+    Rs = [firstR]
+
+    for i in range(16):
+        exR = "".join([Rs[i][x] for x in edible])
+        exRK = format(int(exR, 2) ^ int(allKs[i], 2), '048b')
+        Bs = [exRK[x*6:x*6+6] for x in range(8)]
+        Boutside = [int(Bs[x][0] + Bs[x][-1], 2) for x in range(8)]
+        Binside = [int(Bs[x][1:5], 2) for x in range(8)]
+        Sss = "".join([format(sBoxes[x][Boutside[x]][Binside[x]], '04b') for x in range(8)])
+        Pdone = "".join([Sss[x] for x in P])
+        endingR = int(Ls[i], 2) ^ int(Pdone, 2)
+
+        Rs.append(format(endingR, '032b'))
+        Ls.append(Rs[i])
+
+    lastRL = Rs[-1] + Ls[-1]
+    C = format(int("".join([lastRL[x] for x in fp]), 2), "016X")
+    # C = format(int("".join([lastRL[x] for x in fp]), 2), "064b")
+
+    print(f"Part 2: {C}")
+
+def decrypt(plainC, plainK):
+    binC = format(int(plainC, 16), '064b')
+    binK = format(int(plainK, 16), '064b')
+    Kplus = [binK[i] for i in pc1]
+
+    firstC = "".join(Kplus[:28])
+    firstD = "".join(Kplus[28:])
+
+    Cs = [firstC]
+    Ds = [firstD]
+
+    for i in range(16):
+        Cs.append("".join(Cs[i][shifts[i]:] + Cs[i][:shifts[i]]))
+        Ds.append("".join(Ds[i][shifts[i]:] + Ds[i][:shifts[i]]))
+
+    newKs = [Cs[i+1] + Ds[i+1] for i in range(16)]
+    allKs = ["".join(newKs[i][x] for x in pc2) for i in range(16)]
+    
+    unfp = binC[:fp[i]] + binC[i] + binC[fp[i]+1:]
+    
+    Rs = [unfp[:32]]
+    Ls = [unfp[32:]]
+    
+    for i in range(16):
+        
+        
+        Ls.append(Rs[i])
+
+
+def main():
+    # plainMorC = sys.argv[1] # 0123456789ABCDEF # 85E813540F0AB405
+    # plainM = "0123456789ABCDEF"
+    plainC = "85E813540F0AB405"
+    # plainK = sys.argv[2] # 133457799BBCDFF1
+    plainK = "133457799BBCDFF1"
+    # encrypt(plainM, plainK)
+    decrypt(plainC, plainK)
+
+if __name__ == "__main__":
+    main()
+    
