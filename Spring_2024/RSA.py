@@ -1,10 +1,8 @@
 import math
 import sys
 
-p = sys.argv[1]
-q = sys.argv[2]
-# p = 59
-# q = 71
+p = int(sys.argv[1])
+q = int(sys.argv[2])
 n = p * q
 on = (p-1) * (q-1)
 
