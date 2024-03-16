@@ -164,7 +164,6 @@ def encrypt(plainM, plainK):
 
     lastRL = Rs[-1] + Ls[-1]
     C = format(int("".join([lastRL[x] for x in fp]), 2), "016X")
-    # C = format(int("".join([lastRL[x] for x in fp]), 2), "064b")
 
     print(f"Part 2: {C}")
 
@@ -208,16 +207,14 @@ def decrypt(plainC, plainK):
     firstR = Rs[-1]
     ipedM = firstL + firstR
     M = "".join([ipedM[i] for i in fp])
-    print(f"{format(int(M, 2), '016X')}")
-    # print(f"{format(int(M, 2), '064b')}")
+    print(f"Original Message Hex is {format(int(M, 2), '016X')}")
 
 
 def main():
-    plainMorC = sys.argv[1] # 0123456789ABCDEF # 85E813540F0AB405
+    plainMorC = sys.argv[1]
     # plainM = "0123456789ABCDEF"
     # plainC = "85E813540F0AB405"
     plainK = sys.argv[2] # 133457799BBCDFF1
-    # plainK = "133457799BBCDFF1"
     # encrypt(plainMorC, plainK)
     decrypt(plainMorC, plainK)
 
