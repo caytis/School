@@ -186,25 +186,40 @@ def decrypt(plainC, plainK):
     newKs = [Cs[i+1] + Ds[i+1] for i in range(16)]
     allKs = ["".join(newKs[i][x] for x in pc2) for i in range(16)]
     
-    unfp = binC[:fp[i]] + binC[i] + binC[fp[i]+1:]
+    unfp = "".join([binC[f] for f in ip]) ###
     
-    Rs = [unfp[:32]]
     Ls = [unfp[32:]]
-    
+    Rs = [unfp[:32]]
+
     for i in range(16):
-        
-        
-        Ls.append(Rs[i])
+        Rs.append(Ls[i])
+        exR = "".join([Rs[i+1][x] for x in edible])
+        exRK = format(int(exR, 2) ^ int(allKs[-i-1], 2), '048b')
+        Bs = [exRK[x*6:x*6+6] for x in range(8)]
+        Boutside = [int(Bs[x][0] + Bs[x][-1], 2) for x in range(8)]
+        Binside = [int(Bs[x][1:5], 2) for x in range(8)]
+        Sss = "".join([format(sBoxes[x][Boutside[x]][Binside[x]], '04b') for x in range(8)])
+        Pdone = "".join([Sss[x] for x in P])
+        endingR = int(Rs[i], 2) ^ int(Pdone, 2)
+
+        Ls.append(format(endingR, '032b'))
+    
+    firstL = Ls[-1]
+    firstR = Rs[-1]
+    ipedM = firstL + firstR
+    M = "".join([ipedM[i] for i in fp])
+    print(f"{format(int(M, 2), '016X')}")
+    # print(f"{format(int(M, 2), '064b')}")
 
 
 def main():
-    # plainMorC = sys.argv[1] # 0123456789ABCDEF # 85E813540F0AB405
+    plainMorC = sys.argv[1] # 0123456789ABCDEF # 85E813540F0AB405
     # plainM = "0123456789ABCDEF"
-    plainC = "85E813540F0AB405"
-    # plainK = sys.argv[2] # 133457799BBCDFF1
-    plainK = "133457799BBCDFF1"
-    # encrypt(plainM, plainK)
-    decrypt(plainC, plainK)
+    # plainC = "85E813540F0AB405"
+    plainK = sys.argv[2] # 133457799BBCDFF1
+    # plainK = "133457799BBCDFF1"
+    # encrypt(plainMorC, plainK)
+    decrypt(plainMorC, plainK)
 
 if __name__ == "__main__":
     main()
