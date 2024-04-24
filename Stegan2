@@ -1,0 +1,94 @@
+from PIL import Image
+
+"""This is going to be a replacement for Steganography.py"""
+
+def hide_message(path, message, key):
+    """Hides text in an image"""
+    img = Image.open(path)
+    pix = img.load()
+    width, height = img.size
+    space = int(width * height / 8)
+    messageLength = len(message)
+    messLenBin = bin(messageLength)[2:].zfill(16)
+    
+    messageBin = "".join([bin(ord(i))[2:].zfill(8) for i in message])
+    # encode messageBin with key
+    encoded = []
+    for i in range(len(messageBin)):
+        encoded.append(str(int(messageBin[i]) ^ int(key[i % len(key)])))
+    encoded = "".join(encoded)
+    toHide = messLenBin + encoded
+    
+    # check if the message can fit in the image
+    if len(encoded) > space:
+        raise ValueError("Message is too long to fit in the image")
+    
+    # hide the message in the image, alternating between g and b values in least significant bit, g in one pixel, b in the next
+    for i in range(0, len(toHide), 2):
+        x = i // 2 % width
+        y = i // 2 // height
+        r, g, b = pix[x, y]
+        pix[x, y] = (r, g & 0b11111110 | int(toHide[i]), b)
+        if i + 1 < len(toHide):
+            r, g, b = pix[x + 1, y + 1]
+            pix[x + 1, y + 1] = (r, g, b & 0b11111110 | int(toHide[i + 1]))
+    
+    # for i in range(0, len(toHide), 2):
+    #     x = i % width
+    #     y = i // width
+    #     r, g, b = pix[x, y]
+    #     pix[x, y] = (r, g & 0b11111110 | int(toHide[i]), b & 0b11111110 | int(toHide[i + 1]))
+        
+    img.save("hidden.jpeg")
+    ### WHY DOES IT FLIP THE IMAGE???
+    return img
+
+
+    
+    
+    
+    # #message back to text
+    # messageTxt = "".join([chr(int(messageBin[i:i+8], 2)) for i in range(0, len(messageBin), 8)])
+    # Convert the image to RGB
+
+
+# def encodeMessage(message, key):
+#     messageLength = len(message)
+#     # convert the length of the message to binary
+#     lenBin = bin(messageLength)[2:].zfill(16)
+#     lenBinLen = len(lenBin)
+    
+#     encoded = [ord(i) for i in message]
+#     # make a binary number for the message length
+#     binmessage = "".join([bin(i)[2:].zfill(8) for i in encoded])
+#     length = len(binmessage)
+    
+    # pass
+
+def makeKey(path):
+    img = Image.open(path)
+    pix = img.load()
+    width, height = img.size
+
+    firstRpixs = []
+    lastRpixs = []
+    # the r value of beginning 64 pixel bytes moving diagonally (after random num 27) will be used to reference different rows of last 64 pixels' r values
+    for i in range(27, (64 * 8) + 27):
+        r, g, b = pix[i, i]
+        firstRpixs.append(str(r & 1))
+    # the r value of end 64 pixels moving diagonally (after random num 32) will be used to reference different rows of last 64 pixels' r values
+    references = [int("".join(firstRpixs[i:i+8]), 2) for i in range(0, len(firstRpixs), 8)]
+    for byte in references: # img.width - 32, img.width - 64 - 32, -1
+        # get the r value of the last pixs referenced (y / 3)
+        r, g, b = pix[(width - 1 - byte), (height - 1 - (byte / 3))]
+        lastRpixs.append(str(r & 1))
+    
+    # for x in range(-64)
+    
+    key = "".join(lastRpixs)
+    return key
+
+path = "test.jpeg"
+key = makeKey(path)
+encodedImg = hide_message(path, "I really miss you! Please come home...", key)
+pass
