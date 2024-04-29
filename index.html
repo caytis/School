@@ -4,25 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Web Page</title>
+    <title>Hidden Messages</title>
 </head>
 <body>
     <header>
-        <h1>Welcome to My Website</h1>
+        <h1>Hidden Messages</h1>
     </header>
-    <nav>
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-    </nav>
     <section id="home">
         <h2>Home Section</h2>
         <form action="/submit-form" method="post">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-            <label for="message">Message:</label>
+            <label for="name">Image to hide message in:</label>
+            <input type="file" id="name" name="name" required>
+            <label for="message">Message to hide in image:</label>
             <textarea id="message" name="message" required></textarea>
             <button type="submit">Submit</button>
         </form>
