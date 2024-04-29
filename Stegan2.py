@@ -131,6 +131,7 @@ new_key = makeKey(new_img)
 new_message = show_message(new_img, new_key)
 # new_key2 = makeKey(encodedImg)
 # new_message2 = show_message(encodedImg, new_key2)
+print(img==new_img)
 pass
 
 # why does it change the file between saving and opening it?
