@@ -56,7 +56,7 @@ def hide_message(img, message, key):
     # decode the length of the message
     messageLength2 = int(lengthBin, 2)
     
-    img.save("hidden.jpeg")
+    img.save("hidden.png")
     ### WHY DOES IT FLIP THE IMAGE???
     return img
 
@@ -121,12 +121,12 @@ def makeKey(img):
     key = "".join(lastRpixs)
     return key
 
-img = Image.open("test.jpeg") # actually should just take img from user
-img.save("testCopy.jpeg")
-img = Image.open("testCopy.jpeg")
+img = Image.open('test.png') # actually should just take img from user
+img.save("testCopy.png")
+img = Image.open("testCopy.png")
 key = makeKey(img)
 encodedImg = hide_message(img, "I really miss you! Please come home...", key)
-new_img = Image.open("hidden.jpeg")
+new_img = Image.open("hidden.png")
 new_key = makeKey(new_img)
 new_message = show_message(new_img, new_key)
 # new_key2 = makeKey(encodedImg)
