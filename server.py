@@ -38,5 +38,4 @@ def decode_image():
         return str(e), 400
 
 if __name__ == '__main__':
-    home()
-    app.run(debug=True, port=5001)
+    app.run(debug=True)

@@ -92,7 +92,7 @@ def show_message(image):
         messageBin += str(secondb & 1)
     # decode messageBin with key
     decodedBin = []
-    for i in range(len(messageBin)):
+    for i in range(messageLength):
         decodedBin.append(str(int(messageBin[i]) ^ int(key[i % len(key)])))
     decodedBin = "".join(decodedBin)
     # new_message = "".join([chr(int(decoded[i:i+8], 2)) for i in range(0, len(decoded), 8)])
@@ -127,10 +127,10 @@ def makeKey(img):
 # img.save("testCopy.png")
 # img = Image.open("testCopy.png")
 # key = makeKey(img)
-# encodedImg = hide_message(img, "I really miss you! Please come home...", key)
+encodedImg = hide_message('test.JPG', "I really miss you! Please come home...")
 # new_img = Image.open("hidden.png")
 # new_key = makeKey(new_img)
-# new_message = show_message(new_img, new_key)
+new_message = show_message('hidden.png')
 # # new_key2 = makeKey(encodedImg)
 # # new_message2 = show_message(encodedImg, new_key2)
 # print(img==new_img)
