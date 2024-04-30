@@ -1,0 +1,22 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+.section {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+input[type="file"], input[type="text"] {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+button {
+    cursor: pointer;
+}

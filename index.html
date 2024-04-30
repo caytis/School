@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Steganography</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Image Steganography</h1>
+    <div class="section">
+        <h2>Encode Message</h2>
+        <form id="encodeForm" action="/encode" method="POST" enctype="multipart/form-data">
+            <label for="imageUpload">Upload image:</label>
+            <input type="file" id="imageUpload" name="image" required>
+            <label for="message">Enter message to hide:</label>
+            <input type="text" id="message" name="message" required>
+            <button type="submit">Encode Message</button>
+        </form>
+        <div id="encodedImage"></div>
+        <p>Please keep as PNG image and avoid compression for optimal results.</p>
+    </div>
+
+    <div class="section">
+        <h2>Decode Message</h2>
+        <form id="decodeForm" action="/decode" method="POST" enctype="multipart/form-data">
+            <label for="imageUploadDecode">Upload encoded image:</label>
+            <input type="file" id="imageUploadDecode" name="image" required>
+            <button type="submit">Decode Message</button>
+        </form>
+        <p>If the decoded message is nonsensical, it may be due to using an image that was not encoded.</p>
+        <div id="decodedMessage"></div>
+    </div>
+
+    <!-- <script src="scripts.js"></script> -->
+</body>
+</html>
