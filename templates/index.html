@@ -16,7 +16,7 @@
             <label for="message">Enter message to hide:</label>
             <input type="text" id="message" name="message" required>
             <button type="submit">Encode Message</button>
-        </form>
+        </form>        
         <div id="encodedImage"></div>
         <p>Please keep as PNG image and avoid compression for optimal results.</p>
     </div>
@@ -29,7 +29,7 @@
             <button type="submit">Decode Message</button>
         </form>
         <p>If the decoded message is nonsensical, it may be due to using an image that was not encoded.</p>
-        <div id="decodedMessage"></div>
+        <div id="decodedMessage">{{ decoded_message }}</div>
     </div>
 
     <!-- <script src="scripts.js"></script> -->

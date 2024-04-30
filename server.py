@@ -1,9 +1,13 @@
-from flask import Flask, request, send_file, redirect, jsonify
-from Steganography import hide_message, show_message  # Assuming these functions are defined in your module
+from flask import Flask, request, send_file, redirect, jsonify, render_template
+from Steganography import hide_message, show_message
 from PIL import Image
 from io import BytesIO
 
 app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return render_template('index.html')
 
 @app.route('/encode', methods=['POST'])
 def encode_image():
@@ -17,7 +21,7 @@ def encode_image():
         img_io = BytesIO()
         encoded_image.save(img_io, format='PNG')
         img_io.seek(0)
-        return send_file(img_io, mimetype='image/png', as_attachment=True, attachment_filename='hidden.png')
+        return send_file(img_io, mimetype='image/png', as_attachment=True, download_name='hidden.png')
     except Exception as e:
         return jsonify(error=str(e)), 400
 
@@ -28,9 +32,8 @@ def decode_image():
     image = request.files['image']
     
     try:
-        # Process image to extract message
         decoded_message = show_message(image)
-        return f"<h1>Decoded Message: {decoded_message}</h1>"
+        return render_template('index.html', decoded_message=decoded_message)
     except Exception as e:
         return str(e), 400
 
