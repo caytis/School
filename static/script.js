@@ -22,3 +22,4 @@ document.getElementById('decodeForm').addEventListener('submit', function(event)
         document.getElementById('decodedMessage').innerText = 'Decoded message: ' + text;
     });
 });
+
