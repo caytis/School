@@ -6,14 +6,9 @@ def hide_message(image, message):
     """Hides text in an image"""
     img = Image.open(image)
     key = makeKey(img)
-    # img = image.copy().convert("RGB")
-    # img.save("testCopy.jpeg")
-    # img = Image.open("testCopy.jpeg").convert("RGB")
     pix = img.load()
     width, height = img.size
     space = int(width * height / 8)
-    # messageLength = len(message)
-    # messLenBin = bin(messageLength)[2:].zfill(16)
     messageBin = "".join([bin(ord(i))[2:].zfill(8) for i in message])
     # encode messageBin with key
     encoded = []
@@ -46,19 +41,18 @@ def hide_message(image, message):
     #     r, g, b = pix[x, y]
     #     pix[x, y] = (r, g & 0b11111110 | int(toHide[i]), b & 0b11111110 | int(toHide[i + 1]))
     # testing algorithm
-    lengthBin = ""
-    for i in range(0, 16, 2):
-        x = i // 2 % width
-        y = i // 2 % width
-        r, firstg, b = pix[x, y]
-        r, g, secondb = pix[x + 1, y + 1]
-        lengthBin += str(firstg & 1)
-        lengthBin += str(secondb & 1)
-    # decode the length of the message
-    messageLength2 = int(lengthBin, 2)
+    # lengthBin = ""
+    # for i in range(0, 16, 2):
+    #     x = i // 2 % width
+    #     y = i // 2 % width
+    #     r, firstg, b = pix[x, y]
+    #     r, g, secondb = pix[x + 1, y + 1]
+    #     lengthBin += str(firstg & 1)
+    #     lengthBin += str(secondb & 1)
+    # # decode the length of the message
+    # messageLength2 = int(lengthBin, 2)
     
     img.save("hidden.png")
-    ### WHY DOES IT FLIP THE IMAGE???
     return img
 
 
@@ -68,10 +62,8 @@ def show_message(image):
     key = makeKey(img)
     pix = img.load()
     width, height = img.size
-    # space = int(width * height / 8)
     lengthBin = ""
     # alternating g and b values in least significant bit, g in one pixel, b in the next
-    # not getting the right length
     for i in range(0, 16, 2):
         x = i // 2 % width
         y = i // 2 % width
@@ -81,7 +73,6 @@ def show_message(image):
         lengthBin += str(secondb & 1)
     # decode the length of the message
     messageLength = int(lengthBin, 2)
-    # messageLength = 304
     messageBin = ""
     for i in range(16, messageLength * 8 + 16, 2):
         x = i // 2 % width
@@ -95,13 +86,11 @@ def show_message(image):
     for i in range(messageLength):
         decodedBin.append(str(int(messageBin[i]) ^ int(key[i % len(key)])))
     decodedBin = "".join(decodedBin)
-    # new_message = "".join([chr(int(decoded[i:i+8], 2)) for i in range(0, len(decoded), 8)])
     new_message = "".join([chr(int(decodedBin[i:i+8], 2)) for i in range(0, len(decodedBin), 8)])
     return new_message
 
 
 def makeKey(img):
-    # img = Image.open(img)
     pix = img.load()
     width, height = img.size
 
@@ -113,12 +102,10 @@ def makeKey(img):
         firstRpixs.append(str(r & 1))
     # the r value of end 64 pixels moving diagonally (after random num 32) will be used to reference different rows of last 64 pixels' r values
     references = [int("".join(firstRpixs[i:i+8]), 2) for i in range(0, len(firstRpixs), 8)]
-    for byte in references: # img.width - 32, img.width - 64 - 32, -1
+    for byte in references:
         # get the r value of the last pixs referenced (y / 3)
         r, g, b = pix[(width - 1 - byte), (height - 1 - (byte / 3))]
         lastRpixs.append(str(r & 1))
-    
-    # for x in range(-64)
     
     key = "".join(lastRpixs)
     return key
@@ -127,10 +114,10 @@ def makeKey(img):
 # img.save("testCopy.png")
 # img = Image.open("testCopy.png")
 # key = makeKey(img)
-encodedImg = hide_message('test.JPG', "I really miss you! Please come home...")
+# encodedImg = hide_message('test.JPG', "I really miss you! Please come home...")
 # new_img = Image.open("hidden.png")
 # new_key = makeKey(new_img)
-new_message = show_message('hidden.png')
+# new_message = show_message('hidden.png')
 # # new_key2 = makeKey(encodedImg)
 # # new_message2 = show_message(encodedImg, new_key2)
 # print(img==new_img)

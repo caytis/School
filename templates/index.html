@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Steganography</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <h1>Image Steganography</h1>
@@ -18,7 +18,7 @@
             <button type="submit">Encode Message</button>
         </form>        
         <div id="encodedImage"></div>
-        <p>Please keep as PNG image and avoid compression for optimal results.</p>
+        <p>Please keep download as PNG image and avoid compression for optimal results.</p>
     </div>
 
     <div class="section">
