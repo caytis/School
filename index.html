@@ -1,33 +1,57 @@
-
 <!DOCTYPE html>
+<!-- This page will have an input spot for the image and the message to hide, outputting the new image, then an input for an image to decode that outputs the hidden message. -->
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hidden Messages</title>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steganography Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        button {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Hidden Messages</h1>
-    </header>
-    <section id="home">
-        <h2>Home Section</h2>
-        <form action="/submit-form" method="post">
-            <label for="name">Image to hide message in:</label>
-            <input type="file" id="name" name="name" required>
-            <label for="message">Message to hide in image:</label>
-            <textarea id="message" name="message" required></textarea>
-            <button type="submit">Submit</button>
-        </form>
-        <p>This is the home section of the webpage.</p>
-    </section>
-    <section id="about">
-        <h2>About Section</h2>
-        <p>This section is about the website.</p>
-    </section>
-    <section id="contact">
-        <h2>Contact Section</h2>
-        <p>Here is how you can contact me.</p>
-    </footer>
+    <h1>Steganography Tool</h1>
+
+    <!-- Form to encode a message into an image -->
+    <h2>Encode Message</h2>
+    <form action="/encode" method="post" enctype="multipart/form-data">
+        <label>
+            Select image to hide message in:
+            <input type="file" name="image" required>
+        </label>
+        <label>
+            Enter message to hide:
+            <input type="text" name="message" required>
+        </label>
+        <button type="submit">Hide Message</button>
+    </form>
+
+    <!-- Form to decode a message from an image -->
+    <h2>Decode Message</h2>
+    <form action="/decode" method="post" enctype="multipart/form-data">
+        <label>
+            Select image to decode message from:
+            <input type="file" name="image" required>
+        </label>
+        <button type="submit">Decode Message</button>
+    </form>
+
 </body>
+
 </html>
