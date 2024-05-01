@@ -17,7 +17,6 @@ def hide_message(image, message):
     encoded = "".join(encoded)
     messageLength = len(encoded)
     messLenBin = bin(messageLength)[2:].zfill(16)
-    # lengthCheck = int(messLenBin, 2)
     toHide = messLenBin + encoded
     
     # check if the message can fit in the image
@@ -30,27 +29,8 @@ def hide_message(image, message):
         y = i // 2 % width
         r, g, b = pix[x, y]
         pix[x, y] = (r, g & 0b11111110 | int(toHide[i]), b)
-        # img.putpixel((x, y), (r, g & 0b11111110 | int(toHide[i]), b))
         r, g, b = pix[x + 1, y + 1]
-        # pix[x + 1, y + 1] = (r, g, b & 0b11111110 | int(toHide[i + 1]))
         img.putpixel((x + 1, y + 1), (r, g, b & 0b11111110 | int(toHide[i + 1])))
-    
-    # for i in range(0, len(toHide), 2):
-    #     x = i % width
-    #     y = i // width
-    #     r, g, b = pix[x, y]
-    #     pix[x, y] = (r, g & 0b11111110 | int(toHide[i]), b & 0b11111110 | int(toHide[i + 1]))
-    # testing algorithm
-    # lengthBin = ""
-    # for i in range(0, 16, 2):
-    #     x = i // 2 % width
-    #     y = i // 2 % width
-    #     r, firstg, b = pix[x, y]
-    #     r, g, secondb = pix[x + 1, y + 1]
-    #     lengthBin += str(firstg & 1)
-    #     lengthBin += str(secondb & 1)
-    # # decode the length of the message
-    # messageLength2 = int(lengthBin, 2)
     
     img.save("hidden.png")
     return img
