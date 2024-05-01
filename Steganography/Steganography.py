@@ -4,7 +4,7 @@ from PIL import Image
 
 def hide_message(image, message):
     """Hides text in an image"""
-    img = Image.open(image)
+    img = Image.open(image).convert("RGB")
     key = makeKey(img)
     pix = img.load()
     width, height = img.size
@@ -38,7 +38,7 @@ def hide_message(image, message):
 
 def show_message(image):
     """Shows the hidden message in an image"""
-    img = Image.open(image)
+    img = Image.open(image).convert("RGB")
     key = makeKey(img)
     pix = img.load()
     width, height = img.size
